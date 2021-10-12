@@ -9,44 +9,42 @@
         <CartIcon />
         <OrderSummary />
       </div> -->
-    <v-container>
-      <v-row class="text-center">
-        <v-col cols="12">
-          <div class="search">
-            <v-form
-              @submit.prevent="$store.dispatch('fetchBooks', { startIndex: 0 })"
-            >
-              <v-container>
-                <v-row>
-                  <!-- <v-col cols="12" sm="6" md="3"> -->
-                  <v-col>
-                    <v-text-field
-                      v-model="searchText"
-                      label="Поиск книг"
-                      placeholder="Введите название книги"
-                      outlined
-                    ></v-text-field>
-                  </v-col>
+    <!-- <v-container> -->
+    <!-- <v-row class="text-center">
+        <v-col cols="12"> -->
+    <div class="search">
+      <v-form
+        @submit.prevent="$store.dispatch('fetchBooks', { startIndex: 0 })"
+      >
+        <!-- <v-container>
+                <v-row> -->
+        <!-- <v-col cols="12" sm="6" md="3"> -->
+        <!-- <v-col> -->
+        <v-text-field
+          v-model="searchText"
+          label="Поиск книг"
+          placeholder="Введите название книги"
+          outlined
+        ></v-text-field>
+        <!-- </v-col>
                 </v-row>
-              </v-container>
-              <div class="text-center">
-                <v-btn rounded color="primary" dark type="submit">
-                  Отправить
-                </v-btn>
-              </div>
-            </v-form>
-            <!-- <form @submit.prevent="$store.dispatch('fetchBooks')">
+              </v-container> -->
+        <div class="text-center">
+          <v-btn rounded color="primary" dark type="submit"> Отправить </v-btn>
+        </div>
+      </v-form>
+      <!-- <form @submit.prevent="$store.dispatch('fetchBooks')">
               <input class="search__text" type="text" v-model="searchText" />
               <button class="btn btn--primary" type="submit">Отправить</button>
             </form> -->
-            <div class="cart-wraper">
-              <CartIcon />
-              <OrderSummary />
-            </div>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
+      <div class="cart-wraper">
+        <CartIcon />
+        <OrderSummary />
+      </div>
+    </div>
+    <!-- </v-col>
+      </v-row> -->
+    <!-- </v-container> -->
     <!-- </div> -->
 
     <div class="message" v-if="$store.getters.getShowMessage">
@@ -150,5 +148,20 @@ export default {
   color: rgb(3, 148, 3);
   padding: 24px;
   margin: 24px 0;
+}
+.v-input__slot {
+  margin-bottom: 0 !important;
+}
+.v-text-field__details {
+  display: none !important;
+}
+.v-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 600px;
+}
+.v-input {
+  max-width: 75% !important;
 }
 </style>
