@@ -3,7 +3,7 @@ import axios from 'axios';
 export default {
   state: {
     searchText: '',
-    books: [],
+    books: null,
     book: {},
     orderedBooks: [],
     showMessage: false,
@@ -48,7 +48,7 @@ export default {
     fillText({ commit }, payload) {
       commit('fillText', payload);
     },
-    async fetchBooks({ getters, commit }) {
+    async fetchBooks({ getters, commit }, payload) {
       if (getters.getSearchText) {
         try {
           const response = await axios.get(
@@ -56,6 +56,7 @@ export default {
             {
               params: {
                 q: getters.getSearchText,
+                startIndex: payload.startIndex,
               },
             }
           );

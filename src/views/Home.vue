@@ -13,7 +13,9 @@
       <v-row class="text-center">
         <v-col cols="12">
           <div class="search">
-            <v-form @submit.prevent="$store.dispatch('fetchBooks')">
+            <v-form
+              @submit.prevent="$store.dispatch('fetchBooks', { startIndex: 0 })"
+            >
               <v-container>
                 <v-row>
                   <!-- <v-col cols="12" sm="6" md="3"> -->
@@ -52,7 +54,7 @@
       {{ $route.params.currency }} успешно оформлен
     </div>
 
-    <div class="books-wraper">
+    <div class="books-wraper" v-if="$store.getters.getBooks">
       <Book
         v-for="book of $store.getters.getBooks.items"
         :book="book"
@@ -60,7 +62,16 @@
         :showModal="showModal"
         :setCurrentBook="setCurrentBook"
       />
+      <div class="text-center">
+        <v-pagination
+          v-model="page"
+          :length="Math.ceil($store.getters.getBooks.totalItems / 10)"
+          :total-visible="7"
+          @input="handlePagination"
+        ></v-pagination>
+      </div>
     </div>
+
     <OrderBookModal ref="orderModal" :book="currentBook" />
   </div>
 </template>
@@ -76,6 +87,7 @@ export default {
   data() {
     return {
       currentBook: {},
+      page: 1,
     };
   },
   components: {
@@ -101,6 +113,9 @@ export default {
     setCurrentBook(book) {
       this.currentBook = book;
       console.log(book);
+    },
+    handlePagination(page) {
+      this.$store.dispatch('fetchBooks', { startIndex: page * 10 - 10 });
     },
   },
 };
