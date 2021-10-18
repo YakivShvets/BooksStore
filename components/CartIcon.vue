@@ -1,17 +1,17 @@
 <template>
   <div class="cart-icon">
-    <router-link to="/cart"><ImgPlaceholder alt="cart" /></router-link>
+    <nuxt-link to="/cart"><CartImg /></nuxt-link>
   </div>
 </template>
 
 <script>
-import ImgPlaceholder from '../assets/cart-img.svg';
+// import ImgPlaceholder from '../assets/cart-img.svg';
 
 export default {
   components: {
-    ImgPlaceholder,
+    // ImgPlaceholder,
   },
-};
+}
 </script>
 <style lang="scss">
 .cart-icon {

@@ -1,7 +1,7 @@
 <template>
   <div class="cart">
     <div class="to-home">
-      <router-link to="/"><ImgPlaceholder alt="cart" /></router-link>
+      <nuxt-link to="/"><ToHome /></nuxt-link>
     </div>
     <h1 v-if="!$store.getters.getOrderedBooks.length">Корзина пуста</h1>
     <div v-else>
@@ -42,17 +42,18 @@
 </template>
 
 <script>
-import ImgPlaceholder from '../assets/left-arrow-icon.svg';
 export default {
-  components: {
-    ImgPlaceholder,
-  },
-
   methods: {
+    // getFromLocalStorage() {
+    //   const reference = localStorage.getItem('bookList')
+    //   if (reference) {
+    //     this.$store.dispatch('setOrderedBook', JSON.parse(reference))
+    //   }
+    // },
     clickToOrder() {
       this.$router.push(
         {
-          name: 'Home',
+          path: '/',
           params: {
             sum: this.$store.getters.getTotalPrice,
             currency:
@@ -61,17 +62,20 @@ export default {
           },
         },
         () => {
-          this.$store.dispatch('switchShowMessage', true);
+          this.$store.dispatch('switchShowMessage', true)
           setTimeout(
             () => this.$store.dispatch('switchShowMessage', false),
             15000
-          );
-          this.$store.dispatch('resetOrderedBooks');
+          )
+          this.$store.dispatch('resetOrderedBooks')
         }
-      );
+      )
     },
   },
-};
+  // beforeMount() {
+  //   this.getFromLocalStorage()
+  // },
+}
 </script>
 
 <style lang="scss">

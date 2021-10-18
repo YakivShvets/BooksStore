@@ -11,7 +11,7 @@
       />
     </div>
     <div class="book__svg" v-else>
-      <ImgPlaceholder :alt="book.volumeInfo.title" />
+      <BookPlaceholder />
     </div>
 
     <div class="book__info">
@@ -69,8 +69,7 @@
 </template>
 
 <script>
-import ImgPlaceholder from '../assets/book-placeholder.svg';
-
+// import ImgPlaceholder from '../assets/book-placeholder.svg'
 export default {
   name: 'book',
   props: {
@@ -88,15 +87,15 @@ export default {
     },
   },
   components: {
-    ImgPlaceholder,
+    // ImgPlaceholder,
   },
   methods: {
     handleOrder() {
-      this.setCurrentBook(this.book);
-      this.showModal();
+      this.setCurrentBook(this.book)
+      this.showModal()
     },
   },
-};
+}
 </script>
 
 <style lang="scss">
@@ -109,7 +108,6 @@ export default {
   border-radius: 20px;
   padding: 24px;
   justify-content: space-between;
-
   &__info {
     display: flex;
     flex-direction: column;

@@ -13,7 +13,7 @@
           :src="book.volumeInfo.imageLinks.thumbnail"
           :alt="book.volumeInfo.title"
         />
-        <ImgPlaceholder v-else :alt="book.volumeInfo.title" />
+        <BookPlaceholder v-else :alt="book.volumeInfo.title" />
         <div class="info__description" v-if="book.volumeInfo.description">
           {{ book.volumeInfo.description }}
         </div>
@@ -95,7 +95,6 @@
 </template>
 
 <script>
-import Modal from '@/components/Modal.vue';
 export default {
   data() {
     return {
@@ -107,7 +106,7 @@ export default {
       name: '',
       email: '',
       phoneNumber: '',
-    };
+    }
   },
   props: {
     book: {
@@ -115,73 +114,70 @@ export default {
       required: true,
     },
   },
-  components: {
-    Modal,
-  },
+
   methods: {
     handleSendForm() {
-      this.checkForm();
+      this.checkForm()
       if (this.checkForm() === true) {
-        this.$store.dispatch('addOrderedBook', this.book);
-        this.$refs.modalName.closeModal();
+        this.$store.dispatch('addOrderedBook', this.book)
+        this.$refs.modalName.closeModal()
       } else {
-        this.err();
-        this.checkForm();
+        this.err()
+        this.checkForm()
         if (this.checkForm() === true) {
-          this.$store.dispatch('addOrderedBook', this.book);
+          this.$store.dispatch('addOrderedBook', this.book)
           document
             .querySelector('.form__input')
-            .setAttribute('disabled', 'disabled');
-          this.$refs.modalName.closeModal();
+            .setAttribute('disabled', 'disabled')
+          this.$refs.modalName.closeModal()
         }
       }
     },
     checkForm() {
       if (!this.name) {
-        this.errors.errorName = 'Укажите имя';
+        this.errors.errorName = 'Укажите имя'
       } else if (!this.validName(this.name)) {
-        this.errors.errorName = 'Введите полное имя';
+        this.errors.errorName = 'Введите полное имя'
       }
       if (!this.email) {
-        this.errors.errorEmail = 'Укажите электронную почту';
+        this.errors.errorEmail = 'Укажите электронную почту'
       } else if (!this.validEmail(this.email)) {
-        this.errors.errorEmail = 'Некорректный email';
+        this.errors.errorEmail = 'Некорректный email'
       }
       if (!this.phoneNumber) {
-        this.errors.errorPhone = 'Укажите телефон';
+        this.errors.errorPhone = 'Укажите телефон'
       } else if (!this.validPhone(this.phoneNumber)) {
-        this.errors.errorPhone = 'Укажите корректный телефон';
+        this.errors.errorPhone = 'Укажите корректный телефон'
       }
-
       if (
         !this.errors.errorName &&
         !this.errors.errorEmail &&
         !this.errors.errorPhone
       ) {
-        return true;
+        return true
       }
     },
-    validName: function (name) {
-      let re = /^([а-я]{2,}|[a-z]{2,})/;
-      let lowerName = name.toLowerCase();
-      return re.test(lowerName);
+    validName(name) {
+      const re = /^([а-я]{2,}|[a-z]{2,})/
+      const lowerName = name.toLowerCase()
+      return re.test(lowerName)
     },
-    validEmail: function (email) {
-      let re =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
+    validEmail(email) {
+      const re =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      return re.test(email)
     },
-    validPhone: function (phone) {
-      let re = /^(\+380|0)([0-9]{9})/;
-      return re.test(phone);
+    validPhone(phone) {
+      const re = /^(\+380|0)([0-9]{9})/
+      return re.test(phone)
     },
     err() {
-      this.errors.errorName = '';
-      this.errors.errorEmail = '';
-      this.errors.errorPhone = '';
+      this.errors.errorName = ''
+      this.errors.errorEmail = ''
+      this.errors.errorPhone = ''
     },
   },
-};
+}
 </script>
 
 <style lang="scss">
@@ -203,20 +199,17 @@ export default {
     color: rgb(238, 109, 109);
   }
 }
-
 .form-wraper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-
 .modal-batton {
   display: flex;
   justify-content: space-between;
   width: 60%;
 }
-
 .btn {
   padding: 8px 16px;
   border-radius: 5px;
@@ -229,18 +222,15 @@ export default {
     color: #000;
   }
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 button {
   background: none;
   border: none;
   outline: inherit;
   cursor: pointer;
 }
-
 .modal {
   h1,
   h2,

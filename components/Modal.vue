@@ -34,19 +34,19 @@ export default {
   data() {
     return {
       show: false,
-    };
+    }
   },
   methods: {
     closeModal() {
-      this.show = false;
-      document.querySelector('body').classList.remove('overflow-hidden');
+      this.show = false
+      document.querySelector('body').classList.remove('overflow-hidden')
     },
     openModal() {
-      this.show = true;
-      document.querySelector('body').classList.add('overflow-hidden');
+      this.show = true
+      document.querySelector('body').classList.add('overflow-hidden')
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

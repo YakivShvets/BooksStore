@@ -1,18 +1,16 @@
 <template>
   <div>
     <div class="search">
-      <v-form
-        @submit.prevent="$store.dispatch('fetchBooks', { startIndex: 0 })"
-      >
+      <v-form @submit.prevent="fetchBooks(0)">
         <v-text-field
           v-model="searchText"
           label="Поиск книг"
           placeholder="Введите название книги"
           outlined
         ></v-text-field>
-        <div class="text-center">
-          <v-btn rounded color="primary" dark type="submit"> Отправить </v-btn>
-        </div>
+        <!-- <div class="text-center"> -->
+        <v-btn rounded color="primary" dark type="submit"> Отправить </v-btn>
+        <!-- </div> -->
       </v-form>
       <div class="cart-wraper">
         <CartIcon />
@@ -20,14 +18,14 @@
       </div>
     </div>
 
-    <div class="message" v-if="$store.getters.getShowMessage">
+    <div class="message" v-if="getShowMessage">
       Ваш заказ на сумму {{ $route.params.sum }}
       {{ $route.params.currency }} успешно оформлен
     </div>
 
-    <div class="books-wraper" v-if="$store.getters.getBooks">
+    <div class="books-wraper" v-if="getBooks">
       <Book
-        v-for="book of $store.getters.getBooks.items"
+        v-for="book of getBooks.items"
         :book="book"
         :key="book.id"
         :showModal="showModal"
@@ -36,7 +34,7 @@
       <div class="text-center">
         <v-pagination
           v-model="page"
-          :length="Math.ceil($store.getters.getBooks.totalItems / 10)"
+          :length="Math.ceil(getBooks.totalItems / 10)"
           :total-visible="7"
           @input="handlePagination"
         ></v-pagination>
@@ -48,10 +46,7 @@
 </template>
 
 <script>
-import Book from '@/components/Book.vue';
-import OrderBookModal from '@/components/OrderBookModal.vue';
-import OrderSummary from '@/components/OrderSummary.vue';
-import CartIcon from '@/components/CartIcon.vue';
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'Home',
@@ -59,37 +54,35 @@ export default {
     return {
       currentBook: {},
       page: 1,
-    };
+    }
   },
-  components: {
-    Book,
-    OrderBookModal,
-    OrderSummary,
-    CartIcon,
-  },
+
   computed: {
+    ...mapGetters(['getShowMessage', 'getSearchText', 'getBooks']),
     searchText: {
       get() {
-        return this.$store.getters.getSearchText;
+        return this.getSearchText
       },
       set(value) {
-        this.$store.commit('fillText', value);
+        this.fillText(value)
       },
     },
   },
   methods: {
+    ...mapActions(['fetchBooks']),
+
+    ...mapMutations(['fillText']),
     showModal() {
-      this.$refs.orderModal.$refs.modalName.openModal();
+      this.$refs.orderModal.$refs.modalName.openModal()
     },
     setCurrentBook(book) {
-      this.currentBook = book;
-      console.log(book);
+      this.currentBook = book
     },
     handlePagination(page) {
-      this.$store.dispatch('fetchBooks', { startIndex: page * 10 - 10 });
+      this.fetchBooks({ startIndex: page * 10 - 10 })
     },
   },
-};
+}
 </script>
 
 <style lang="scss">
