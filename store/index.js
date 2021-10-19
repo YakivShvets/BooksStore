@@ -1,5 +1,5 @@
 export const state = () => ({
-  searchText: 'js',
+  searchText: '',
   books: null,
   book: {},
   orderedBooks: [],
@@ -19,6 +19,17 @@ export const mutations = {
   setOrderedBook(state, payload) {
     state.orderedBooks = payload
   },
+  addOrderedForm(state, payload) {
+    state.orderedForm.name = payload
+    state.orderedForm.email = payload
+    state.orderedForm.phoneNumber = payload
+    localStorage.setItem('localName', JSON.stringify(state.orderedForm.name))
+    localStorage.setItem('localName', JSON.stringify(state.orderedForm.email))
+    localStorage.setItem(
+      'localName',
+      JSON.stringify(state.orderedForm.phoneNumber)
+    )
+  },
   switchShowMessage(state, payload) {
     state.showMessage = payload
   },
@@ -36,6 +47,7 @@ export const getters = {
   getOrderedBooks(state) {
     return state.orderedBooks
   },
+
   getTotalPrice(state) {
     return state.orderedBooks
       .reduce((total, book) => total + book.saleInfo.retailPrice.amount, 0)
@@ -63,7 +75,7 @@ export const actions = {
         )
         commit('fetchBooks', response)
       } catch (error) {
-        console.error(error)
+        error(error)
       }
     }
   },

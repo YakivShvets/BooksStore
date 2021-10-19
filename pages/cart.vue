@@ -44,12 +44,6 @@
 <script>
 export default {
   methods: {
-    // getFromLocalStorage() {
-    //   const reference = localStorage.getItem('bookList')
-    //   if (reference) {
-    //     this.$store.dispatch('setOrderedBook', JSON.parse(reference))
-    //   }
-    // },
     clickToOrder() {
       this.$router.push(
         {
@@ -72,9 +66,6 @@ export default {
       )
     },
   },
-  // beforeMount() {
-  //   this.getFromLocalStorage()
-  // },
 }
 </script>
 

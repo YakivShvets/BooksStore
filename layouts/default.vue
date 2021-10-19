@@ -8,6 +8,9 @@
 
 <script>
 export default {
+  mounted() {
+    this.getFromLocalStorage()
+  },
   methods: {
     getFromLocalStorage() {
       const reference = localStorage.getItem('bookList')
@@ -15,9 +18,6 @@ export default {
         this.$store.dispatch('setOrderedBook', JSON.parse(reference))
       }
     },
-  },
-  beforeMount() {
-    this.getFromLocalStorage()
   },
 }
 </script>

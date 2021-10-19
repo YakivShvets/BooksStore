@@ -37,6 +37,7 @@
               type="text"
               name="name"
               v-model="name"
+              :disabled="disabled"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorName">
@@ -51,6 +52,7 @@
               name="email"
               id="formEmail"
               v-model="email"
+              :disabled="disabled"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorEmail">
@@ -67,6 +69,7 @@
               name="tel"
               id="formTel"
               v-model="phoneNumber"
+              :disabled="disabled"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorPhone">
@@ -106,6 +109,7 @@ export default {
       name: '',
       email: '',
       phoneNumber: '',
+      disabled: false,
     }
   },
   props: {
@@ -120,15 +124,14 @@ export default {
       this.checkForm()
       if (this.checkForm() === true) {
         this.$store.dispatch('addOrderedBook', this.book)
+        this.disabled = true
         this.$refs.modalName.closeModal()
       } else {
         this.err()
         this.checkForm()
         if (this.checkForm() === true) {
           this.$store.dispatch('addOrderedBook', this.book)
-          document
-            .querySelector('.form__input')
-            .setAttribute('disabled', 'disabled')
+
           this.$refs.modalName.closeModal()
         }
       }
@@ -194,6 +197,7 @@ export default {
   }
   &__input {
     width: -webkit-fill-available;
+    border-style: inset;
   }
   span {
     color: rgb(238, 109, 109);

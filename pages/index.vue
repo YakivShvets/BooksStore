@@ -8,9 +8,9 @@
           placeholder="Введите название книги"
           outlined
         ></v-text-field>
-        <!-- <div class="text-center"> -->
-        <v-btn rounded color="primary" dark type="submit"> Отправить </v-btn>
-        <!-- </div> -->
+        <client-only>
+          <v-btn rounded color="primary" dark type="submit"> Отправить </v-btn>
+        </client-only>
       </v-form>
       <div class="cart-wraper">
         <CartIcon />
@@ -18,18 +18,18 @@
       </div>
     </div>
 
-    <div class="message" v-if="getShowMessage">
+    <div v-if="getShowMessage" class="message">
       Ваш заказ на сумму {{ $route.params.sum }}
       {{ $route.params.currency }} успешно оформлен
     </div>
 
-    <div class="books-wraper" v-if="getBooks">
+    <div v-if="getBooks" class="books-wraper">
       <Book
         v-for="book of getBooks.items"
-        :book="book"
         :key="book.id"
-        :showModal="showModal"
-        :setCurrentBook="setCurrentBook"
+        :book="book"
+        :show-modal="showModal"
+        :set-current-book="setCurrentBook"
       />
       <div class="text-center">
         <v-pagination

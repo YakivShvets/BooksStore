@@ -69,7 +69,6 @@
 </template>
 
 <script>
-// import ImgPlaceholder from '../assets/book-placeholder.svg'
 export default {
   name: 'book',
   props: {
@@ -86,9 +85,7 @@ export default {
       required: true,
     },
   },
-  components: {
-    // ImgPlaceholder,
-  },
+
   methods: {
     handleOrder() {
       this.setCurrentBook(this.book)
@@ -147,9 +144,10 @@ export default {
     border-radius: 10px;
   }
 }
-.info {
+.modal__body .info {
   display: flex;
   align-items: flex-start;
+  background-color: white !important;
   &__description {
     padding-left: 15px;
   }
