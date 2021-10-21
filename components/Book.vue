@@ -1,8 +1,8 @@
 <template>
   <div class="book">
     <div
-      class="book__img"
       v-if="book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail"
+      class="book__img"
     >
       <img
         :src="book.volumeInfo.imageLinks.thumbnail"
@@ -10,7 +10,7 @@
         style="width: 130px; max-height: 200px"
       />
     </div>
-    <div class="book__svg" v-else>
+    <div v-else class="book__svg">
       <BookPlaceholder />
     </div>
 
@@ -37,7 +37,7 @@
             book.volumeInfo.authors.join(', ')
           }}</template>
         </div>
-        <div class="book__date" v-if="book.volumeInfo.publishedDate">
+        <div v-if="book.volumeInfo.publishedDate" class="book__date">
           <strong>Дата выпуска:</strong>
 
           {{ book.volumeInfo.publishedDate.split('-').reverse().join('.') }}
@@ -45,20 +45,20 @@
       </div>
       <div class="book__sale">
         <div
-          class="book__price"
           v-if="book.saleInfo.saleability === 'FOR_SALE'"
+          class="book__price"
         >
           <strong>
             {{ book.saleInfo.retailPrice.amount }}
             {{ book.saleInfo.retailPrice.currencyCode }}
           </strong>
         </div>
-        <div class="book__price" v-else>
+        <div v-else class="book__price">
           <strong>Отсутствует в продаже</strong>
         </div>
         <button
-          class="btn btn--primary mx-auto"
           v-if="book.saleInfo.saleability === 'FOR_SALE'"
+          class="btn btn--primary"
           @click="handleOrder"
         >
           Заказать
@@ -70,7 +70,7 @@
 
 <script>
 export default {
-  name: 'book',
+  name: 'Book',
   props: {
     book: {
       type: Object,

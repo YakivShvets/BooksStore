@@ -1,10 +1,10 @@
 <template>
-  <modal class="modal" ref="modalName">
-    <template v-slot:header>
+  <modal ref="modalName" class="modal">
+    <template #header>
       <h1>{{ book.volumeInfo.title }}</h1>
     </template>
 
-    <template v-slot:body>
+    <template #body>
       <div class="info">
         <img
           v-if="
@@ -14,48 +14,52 @@
           :alt="book.volumeInfo.title"
         />
         <BookPlaceholder v-else :alt="book.volumeInfo.title" />
-        <div class="info__description" v-if="book.volumeInfo.description">
+        <div v-if="book.volumeInfo.description" class="info__description">
           {{ book.volumeInfo.description }}
         </div>
       </div>
     </template>
 
-    <template v-slot:footer>
+    <template #footer>
       <div class="form-wraper">
-        <h3>Введите данные</h3>
+        <h3 v-if="!$store.getters.getOrderedBooks.length">Введите данные</h3>
+        <div v-else class="checking-form">
+          <h3>Проверьте данные</h3>
+          <button class="disabledBtn" @click="disabledBtn()">Изменить</button>
+        </div>
         <form
-          class="form"
           id="form"
+          class="form"
           novalidate="true"
           @submit.prevent="handleSendForm"
         >
           <div class="form__item">
             <label for="formName">Имя</label>
             <input
-              class="form__input"
               id="formName"
+              v-model="name"
+              class="form__input"
               type="text"
               name="name"
-              v-model="name"
               :disabled="disabled"
             />
 
-            <span style="white-space: nowrap" v-if="errors.errorName">
+            <span v-if="errors.errorName" style="white-space: nowrap">
               {{ errors.errorName }}
             </span>
           </div>
           <div class="form__item">
             <label for="formEmail">Email</label>
             <input
+              id="formEmail"
+              v-model="email"
               class="form__input"
               type="email"
               name="email"
-              id="formEmail"
-              v-model="email"
               :disabled="disabled"
             />
 
-            <span style="white-space: nowrap" v-if="errors.errorEmail">
+            <span v-if="errors.errorEmail" style="white-space: nowrap">
               {{ errors.errorEmail }}
             </span>
           </div>
@@ -64,15 +68,15 @@
               >Номер телефона</label
             >
             <input
+              id="formTel"
+              v-model="phoneNumber"
               class="form__input"
               type="tel"
               name="tel"
-              id="formTel"
-              v-model="phoneNumber"
               :disabled="disabled"
             />
 
-            <span style="white-space: nowrap" v-if="errors.errorPhone">
+            <span v-if="errors.errorPhone" style="white-space: nowrap">
               {{ errors.errorPhone }}
             </span>
           </div>
@@ -99,6 +103,13 @@
 
 <script>
 export default {
+  props: {
+    book: {
+      type: Object,
+      required: true,
+    },
+  },
+
   data() {
     return {
       errors: {
@@ -111,12 +122,6 @@ export default {
       phoneNumber: '',
       disabled: false,
     }
-  },
-  props: {
-    book: {
-      type: Object,
-      required: true,
-    },
   },
 
   methods: {
@@ -179,6 +184,9 @@ export default {
       this.errors.errorEmail = ''
       this.errors.errorPhone = ''
     },
+    disabledBtn() {
+      this.disabled = false
+    },
   },
 }
 </script>
@@ -225,6 +233,15 @@ export default {
     background-color: #dddd;
     color: #000;
   }
+}
+.disabledBtn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  color: rgb(243, 137, 87);
+}
+.checking-form {
+  display: flex;
+  flex-direction: column;
 }
 .overflow-hidden {
   overflow: hidden;
