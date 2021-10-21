@@ -39,6 +39,7 @@ export default {
   methods: {
     closeModal() {
       this.show = false
+      this.$store.dispatch('switchDisabled', true)
       document.querySelector('body').classList.remove('overflow-hidden')
     },
     openModal() {

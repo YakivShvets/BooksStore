@@ -41,7 +41,7 @@
               class="form__input"
               type="text"
               name="name"
-              :disabled="disabled"
+              :disabled="$store.getters.getDisabled"
             />
 
             <span v-if="errors.errorName" style="white-space: nowrap">
@@ -56,7 +56,7 @@
               class="form__input"
               type="email"
               name="email"
-              :disabled="disabled"
+              :disabled="$store.getters.getDisabled"
             />
 
             <span v-if="errors.errorEmail" style="white-space: nowrap">
@@ -73,7 +73,7 @@
               class="form__input"
               type="tel"
               name="tel"
-              :disabled="disabled"
+              :disabled="$store.getters.getDisabled"
             />
 
             <span v-if="errors.errorPhone" style="white-space: nowrap">
@@ -120,7 +120,6 @@ export default {
       name: '',
       email: '',
       phoneNumber: '',
-      disabled: false,
     }
   },
 
@@ -129,7 +128,7 @@ export default {
       this.checkForm()
       if (this.checkForm() === true) {
         this.$store.dispatch('addOrderedBook', this.book)
-        this.disabled = true
+        // this.disabled = true
         this.$refs.modalName.closeModal()
       } else {
         this.err()
@@ -185,7 +184,7 @@ export default {
       this.errors.errorPhone = ''
     },
     disabledBtn() {
-      this.disabled = false
+      this.$store.dispatch('switchDisabled', false)
     },
   },
 }

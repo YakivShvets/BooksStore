@@ -45,7 +45,10 @@
       </div>
       <div class="book__sale">
         <div
-          v-if="book.saleInfo.saleability === 'FOR_SALE'"
+          v-if="
+            book.saleInfo.saleability === 'FOR_SALE' &&
+            book.saleInfo.retailPrice.amount !== 0
+          "
           class="book__price"
         >
           <strong>

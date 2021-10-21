@@ -4,6 +4,7 @@ export const state = () => ({
   book: {},
   orderedBooks: [],
   showMessage: false,
+  disabled: false,
 })
 export const mutations = {
   fetchBooks(state, payload) {
@@ -19,19 +20,11 @@ export const mutations = {
   setOrderedBook(state, payload) {
     state.orderedBooks = payload
   },
-  addOrderedForm(state, payload) {
-    state.orderedForm.name = payload
-    state.orderedForm.email = payload
-    state.orderedForm.phoneNumber = payload
-    localStorage.setItem('localName', JSON.stringify(state.orderedForm.name))
-    localStorage.setItem('localName', JSON.stringify(state.orderedForm.email))
-    localStorage.setItem(
-      'localName',
-      JSON.stringify(state.orderedForm.phoneNumber)
-    )
-  },
   switchShowMessage(state, payload) {
     state.showMessage = payload
+  },
+  switchDisabled(state, payload) {
+    state.disabled = payload
   },
   resetOrderedBooks(state) {
     state.orderedBooks = []
@@ -55,6 +48,9 @@ export const getters = {
   },
   getShowMessage(state) {
     return state.showMessage
+  },
+  getDisabled(state) {
+    return state.disabled
   },
 }
 export const actions = {
@@ -87,6 +83,9 @@ export const actions = {
   },
   switchShowMessage({ commit }, payload) {
     commit('switchShowMessage', payload)
+  },
+  switchDisabled({ commit }, payload) {
+    commit('switchDisabled', payload)
   },
   resetOrderedBooks({ commit }) {
     commit('resetOrderedBooks')
