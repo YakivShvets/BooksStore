@@ -57,6 +57,7 @@ export default {
         },
         () => {
           this.$store.dispatch('switchShowMessage', true)
+          this.$store.dispatch('switchDisabled', false)
           setTimeout(
             () => this.$store.dispatch('switchShowMessage', false),
             15000

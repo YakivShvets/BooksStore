@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div class="modal" v-if="show">
+    <div v-if="show" class="modal">
       <div class="modal__backdrop" @click="closeModal()" />
 
       <div class="modal__dialog">
@@ -39,7 +39,9 @@ export default {
   methods: {
     closeModal() {
       this.show = false
-      this.$store.dispatch('switchDisabled', true)
+      if (this.$store.getters.getOrderedBooks.length) {
+        this.$store.dispatch('switchDisabled', true)
+      }
       document.querySelector('body').classList.remove('overflow-hidden')
     },
     openModal() {
