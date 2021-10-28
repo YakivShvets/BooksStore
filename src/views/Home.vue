@@ -1,98 +1,111 @@
 <template>
-  <div>
+  <div class="home">
     <div class="search">
-      <v-form
-        @submit.prevent="$store.dispatch('fetchBooks', { startIndex: 0 })"
+      <form
+        action=""
+        @submit.prevent="store.dispatch('fetchBooks', { startIndex: 0 })"
       >
-        <v-text-field
+        <va-input
           v-model="searchText"
           label="Поиск книг"
           placeholder="Введите название книги"
-          outlined
-        ></v-text-field>
-        <div class="text-center">
-          <v-btn rounded color="primary" dark type="submit"> Отправить </v-btn>
-        </div>
-      </v-form>
+          outline
+        />
+        <va-button type="submit" outline class="ml-4">Отправить</va-button>
+      </form>
       <div class="cart-wraper">
-        <CartIcon />
+        <div class="cart-icon">
+          <router-link to="/cart">
+            <va-icon name="shopping_cart" :size="44" class="mr-2" />
+          </router-link>
+        </div>
+
         <OrderSummary />
       </div>
     </div>
 
-    <div class="message" v-if="$store.getters.getShowMessage">
-      Ваш заказ на сумму {{ $route.params.sum }}
-      {{ $route.params.currency }} успешно оформлен
+    <div class="message" v-if="store.getters.getShowMessage">
+      Ваш заказ на сумму {{ route.params.sum }}
+      {{ route.params.currency }} успешно оформлен
     </div>
 
-    <div class="books-wraper" v-if="$store.getters.getBooks">
+    <div class="books-wraper" v-if="books">
       <Book
-        v-for="book of $store.getters.getBooks.items"
+        v-for="book of books.items"
         :book="book"
         :key="book.id"
-        :showModal="showModal"
+        :showModal="handleShowModal"
         :setCurrentBook="setCurrentBook"
       />
-      <div class="text-center">
-        <v-pagination
-          v-model="page"
-          :length="Math.ceil($store.getters.getBooks.totalItems / 10)"
-          :total-visible="7"
-          @input="handlePagination"
-        ></v-pagination>
-      </div>
     </div>
 
-    <OrderBookModal ref="orderModal" :book="currentBook" />
+    <OrderBookModal
+      :showModal="handleShowModal"
+      :book="currentBook"
+      ref="orderBookModal"
+    />
   </div>
 </template>
 
 <script>
+import { computed, ref } from 'vue';
+import { useStore } from 'vuex';
 import Book from '@/components/Book.vue';
 import OrderBookModal from '@/components/OrderBookModal.vue';
 import OrderSummary from '@/components/OrderSummary.vue';
-import CartIcon from '@/components/CartIcon.vue';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'Home',
-  data() {
-    return {
-      currentBook: {},
-      page: 1,
-    };
-  },
+
   components: {
     Book,
     OrderBookModal,
     OrderSummary,
-    CartIcon,
   },
-  computed: {
-    searchText: {
+  setup() {
+    const orderBookModal = ref(null);
+    const currentBook = ref(null);
+    const store = useStore();
+    const route = useRoute();
+    const searchText = computed({
       get() {
-        return this.$store.getters.getSearchText;
+        return store.getters.getSearchText;
       },
       set(value) {
-        this.$store.commit('fillText', value);
+        store.commit('fillText', value);
       },
-    },
-  },
-  methods: {
-    showModal() {
-      this.$refs.orderModal.$refs.modalName.openModal();
-    },
-    setCurrentBook(book) {
-      this.currentBook = book;
-      console.log(book);
-    },
-    handlePagination(page) {
-      this.$store.dispatch('fetchBooks', { startIndex: page * 10 - 10 });
-    },
+    });
+    const books = computed(function () {
+      return store.getters.getBooks;
+    });
+
+    function handleShowModal() {
+      console.log(orderBookModal.value.bookModal);
+      orderBookModal.value.bookModal.show();
+    }
+
+    function setCurrentBook(book) {
+      currentBook.value = book;
+    }
+
+    return {
+      searchText,
+      books,
+      handleShowModal,
+      setCurrentBook,
+      currentBook,
+      orderBookModal,
+      store,
+      route,
+    };
   },
 };
 </script>
-
 <style lang="scss">
+.home {
+  padding: 0 45px;
+}
 .books-wraper {
   padding: 15px 0 30px;
   display: flex;
@@ -104,8 +117,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 45px;
-  background-color: rgb(214, 237, 243);
+  padding: 45px 0;
   border-radius: 15px;
   &__text {
     width: 350px;
@@ -122,19 +134,10 @@ export default {
   padding: 24px;
   margin: 24px 0;
 }
-.v-input__slot {
-  margin-bottom: 0 !important;
-}
-.v-text-field__details {
-  display: none !important;
-}
-.v-form {
+form {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 600px;
-}
-.v-input {
-  max-width: 75% !important;
 }
 </style>

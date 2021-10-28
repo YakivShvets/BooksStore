@@ -11,7 +11,7 @@
       />
     </div>
     <div class="book__svg" v-else>
-      <ImgPlaceholder :alt="book.volumeInfo.title" />
+      <va-icon name="book" color="#9BEC15" :size="150" />
     </div>
 
     <div class="book__info">
@@ -56,21 +56,13 @@
         <div class="book__price" v-else>
           <strong>Отсутствует в продаже</strong>
         </div>
-        <button
-          class="btn btn--primary mx-auto"
-          v-if="book.saleInfo.saleability === 'FOR_SALE'"
-          @click="handleOrder"
-        >
-          Заказать
-        </button>
+        <va-button @click="handleOrder"> Заказать </va-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import ImgPlaceholder from '../assets/book-placeholder.svg';
-
 export default {
   name: 'book',
   props: {
@@ -87,14 +79,15 @@ export default {
       required: true,
     },
   },
-  components: {
-    ImgPlaceholder,
-  },
-  methods: {
-    handleOrder() {
-      this.setCurrentBook(this.book);
-      this.showModal();
-    },
+
+  setup(props) {
+    function handleOrder() {
+      props.showModal();
+      props.setCurrentBook(props.book);
+    }
+    return {
+      handleOrder,
+    };
   },
 };
 </script>
@@ -109,7 +102,6 @@ export default {
   border-radius: 20px;
   padding: 24px;
   justify-content: space-between;
-
   &__info {
     display: flex;
     flex-direction: column;

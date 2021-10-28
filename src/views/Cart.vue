@@ -1,14 +1,16 @@
 <template>
   <div class="cart">
     <div class="to-home">
-      <router-link to="/"><ImgPlaceholder alt="cart" /></router-link>
+      <router-link to="/"
+        ><va-icon name="arrow_back" color="#9BEC15" class="mr-4" :size="150"
+      /></router-link>
     </div>
-    <h1 v-if="!$store.getters.getOrderedBooks.length">Корзина пуста</h1>
+    <h1 v-if="!store.getters.getOrderedBooks.length">Корзина пуста</h1>
     <div v-else>
       <h1>Подтверждение заказа</h1>
       <table border="1">
         <tr
-          v-for="(orderBook, index) of $store.getters.getOrderedBooks"
+          v-for="(orderBook, index) of store.getters.getOrderedBooks"
           :key="orderBook.id"
         >
           <td>{{ index + 1 }}</td>
@@ -30,9 +32,9 @@
       </table>
       <div class="total-price">
         <span>
-          Сумма заказа: {{ $store.getters.getTotalPrice }}
+          Сумма заказа: {{ store.getters.getTotalPrice }}
           {{
-            $store.getters.getOrderedBooks[0].saleInfo.retailPrice.currencyCode
+            store.getters.getOrderedBooks[0].saleInfo.retailPrice.currencyCode
           }}
         </span>
         <button class="btn btn--primary" @click="clickToOrder">Заказать</button>
@@ -42,34 +44,35 @@
 </template>
 
 <script>
-import ImgPlaceholder from '../assets/left-arrow-icon.svg';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 export default {
-  components: {
-    ImgPlaceholder,
-  },
-
-  methods: {
-    clickToOrder() {
-      this.$router.push(
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    function clickToOrder() {
+      router.push(
         {
           name: 'Home',
           params: {
-            sum: this.$store.getters.getTotalPrice,
+            sum: store.getters.getTotalPrice,
             currency:
-              this.$store.getters.getOrderedBooks[0].saleInfo.retailPrice
+              store.getters.getOrderedBooks[0].saleInfo.retailPrice
                 .currencyCode,
           },
         },
-        () => {
-          this.$store.dispatch('switchShowMessage', true);
-          setTimeout(
-            () => this.$store.dispatch('switchShowMessage', false),
-            15000
-          );
-          this.$store.dispatch('resetOrderedBooks');
-        }
+        completeOrder()
       );
-    },
+    }
+    function completeOrder() {
+      store.dispatch('switchShowMessage', true);
+      setTimeout(() => store.dispatch('switchShowMessage', false), 15000);
+      store.dispatch('resetOrderedBooks');
+    }
+    return {
+      clickToOrder,
+      store,
+    };
   },
 };
 </script>

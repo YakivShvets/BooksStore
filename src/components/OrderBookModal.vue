@@ -1,11 +1,14 @@
 <template>
-  <modal class="modal" ref="modalName">
-    <template v-slot:header>
-      <h1>{{ book.volumeInfo.title }}</h1>
-    </template>
-
-    <template v-slot:body>
-      <div class="info">
+  <va-modal
+    ref="bookModal"
+    stateful
+    hide-default-actions
+    :title="book ? book.volumeInfo.title : ''"
+    attach-element="#app"
+    overlay-opacity="0.2"
+  >
+    <slot>
+      <div v-if="book" class="info">
         <img
           v-if="
             book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail
@@ -13,30 +16,25 @@
           :src="book.volumeInfo.imageLinks.thumbnail"
           :alt="book.volumeInfo.title"
         />
-        <ImgPlaceholder v-else :alt="book.volumeInfo.title" />
+        <div class="book__svg" v-else>
+          <va-icon name="book" color="#9BEC15" class="mr-4" :size="150" />
+        </div>
         <div class="info__description" v-if="book.volumeInfo.description">
           {{ book.volumeInfo.description }}
         </div>
       </div>
-    </template>
 
-    <template v-slot:footer>
       <div class="form-wraper">
         <h3>Введите данные</h3>
-        <form
-          class="form"
-          id="form"
-          novalidate="true"
-          @submit.prevent="handleSendForm"
-        >
+        <form class="form" id="form" novalidate="true">
           <div class="form__item">
-            <label for="formName">Имя</label>
-            <input
-              class="form__input"
-              id="formName"
+            <va-input
+              class="mt-4 mb-2"
               type="text"
               name="name"
               v-model="name"
+              label="Имя"
+              placeholder="Введите имя"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorName">
@@ -44,13 +42,13 @@
             </span>
           </div>
           <div class="form__item">
-            <label for="formEmail">Email</label>
-            <input
-              class="form__input"
+            <va-input
+              class="mt-4 mb-2"
               type="email"
               name="email"
-              id="formEmail"
               v-model="email"
+              label="Email"
+              placeholder="Введите ваш email"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorEmail">
@@ -58,15 +56,13 @@
             </span>
           </div>
           <div class="form__item">
-            <label style="white-space: nowrap" for="formTel"
-              >Номер телефона</label
-            >
-            <input
-              class="form__input"
+            <va-input
+              class="mt-4 mb-2"
               type="tel"
               name="tel"
-              id="formTel"
               v-model="phoneNumber"
+              label="Номер телефона"
+              placeholder="+380*********"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorPhone">
@@ -74,112 +70,126 @@
             </span>
           </div>
         </form>
-        <div class="modal-batton">
-          <button
-            class="btn btn--secondary"
-            @click="$refs.modalName.closeModal()"
-          >
-            Отменить
-          </button>
-          <button
-            class="btn btn--primary"
-            form="form"
-            :disabled="!name.trim() || !email.trim() || !phoneNumber.trim()"
-          >
-            Отправить
-          </button>
-        </div>
       </div>
+    </slot>
+
+    <template v-if="bookModal" #footer>
+      <va-button @click="bookModal.hide" flat class="mr-4"> Закрыть </va-button>
+      <va-button
+        @click="handleSendForm"
+        :disabled="!name || !email || !phoneNumber"
+      >
+        Отправить
+      </va-button>
     </template>
-  </modal>
+  </va-modal>
 </template>
 
 <script>
-import Modal from '@/components/Modal.vue';
+import { ref, reactive } from 'vue';
+import { useStore } from 'vuex';
+
 export default {
-  data() {
-    return {
-      errors: {
-        errorName: '',
-        errorEmail: '',
-        errorPhone: '',
-      },
-      name: '',
-      email: '',
-      phoneNumber: '',
-    };
-  },
   props: {
     book: {
       type: Object,
       required: true,
     },
+    showModal: {
+      type: Function,
+      required: true,
+    },
+    show: {
+      type: Boolean,
+      required: true,
+    },
   },
-  components: {
-    Modal,
-  },
-  methods: {
-    handleSendForm() {
-      this.checkForm();
-      if (this.checkForm() === true) {
-        this.$store.dispatch('addOrderedBook', this.book);
-        this.$refs.modalName.closeModal();
+
+  setup(props) {
+    const store = useStore();
+
+    const bookModal = ref(null);
+
+    const errors = reactive({
+      errorName: '',
+      errorEmail: '',
+      errorPhone: '',
+    });
+
+    const name = ref('');
+    const email = ref('');
+    const phoneNumber = ref('');
+
+    function handleSendForm() {
+      checkForm();
+      if (checkForm() === true) {
+        store.dispatch('addOrderedBook', props.book);
+        bookModal.value.hide();
       } else {
-        this.err();
-        this.checkForm();
-        if (this.checkForm() === true) {
-          this.$store.dispatch('addOrderedBook', this.book);
-          document
-            .querySelector('.form__input')
-            .setAttribute('disabled', 'disabled');
-          this.$refs.modalName.closeModal();
+        bookModal.value.show();
+        err();
+        checkForm();
+        if (checkForm() === true) {
+          store.dispatch('addOrderedBook', props.book);
+          bookModal.value.hide();
         }
       }
-    },
-    checkForm() {
-      if (!this.name) {
-        this.errors.errorName = 'Укажите имя';
-      } else if (!this.validName(this.name)) {
-        this.errors.errorName = 'Введите полное имя';
-      }
-      if (!this.email) {
-        this.errors.errorEmail = 'Укажите электронную почту';
-      } else if (!this.validEmail(this.email)) {
-        this.errors.errorEmail = 'Некорректный email';
-      }
-      if (!this.phoneNumber) {
-        this.errors.errorPhone = 'Укажите телефон';
-      } else if (!this.validPhone(this.phoneNumber)) {
-        this.errors.errorPhone = 'Укажите корректный телефон';
-      }
+    }
 
-      if (
-        !this.errors.errorName &&
-        !this.errors.errorEmail &&
-        !this.errors.errorPhone
-      ) {
-        return true;
+    function checkForm() {
+      if (!name.value) {
+        errors.errorName = 'Укажите имя';
+      } else if (!validName(name.value)) {
+        errors.errorName = 'Введите полное имя';
       }
-    },
-    validName: function (name) {
+      if (!email.value) {
+        errors.errorEmail = 'Укажите электронную почту';
+      } else if (!validEmail(email.value)) {
+        errors.errorEmail = 'Некорректный email';
+      }
+      if (!phoneNumber.value) {
+        errors.errorPhone = 'Укажите телефон';
+      } else if (!validPhone(phoneNumber.value)) {
+        errors.errorPhone = 'Укажите корректный телефон';
+      }
+      if (!errors.errorName && !errors.errorEmail && !errors.errorPhone) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function validName(name) {
       let re = /^([а-я]{2,}|[a-z]{2,})/;
       let lowerName = name.toLowerCase();
       return re.test(lowerName);
-    },
-    validEmail: function (email) {
+    }
+
+    function validEmail(email) {
       let re =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
-    },
-    validPhone: function (phone) {
+    }
+
+    function validPhone(phone) {
       let re = /^(\+380|0)([0-9]{9})/;
       return re.test(phone);
-    },
-    err() {
-      this.errors.errorName = '';
-      this.errors.errorEmail = '';
-      this.errors.errorPhone = '';
-    },
+    }
+
+    function err() {
+      errors.errorName = '';
+      errors.errorEmail = '';
+      errors.errorPhone = '';
+    }
+
+    return {
+      handleSendForm,
+      errors,
+      name,
+      email,
+      phoneNumber,
+      bookModal,
+    };
   },
 };
 </script>
@@ -232,6 +242,10 @@ export default {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.va-modal__title {
+  font-size: 1.25rem !important;
 }
 
 button {
