@@ -16,7 +16,12 @@
       <div class="cart-wraper">
         <div class="cart-icon">
           <router-link to="/cart">
-            <va-icon name="shopping_cart" :size="44" class="mr-2" />
+            <va-icon
+              name="shopping_cart"
+              color="primary"
+              :size="44"
+              class="mr-2"
+            />
           </router-link>
         </div>
 
@@ -24,10 +29,10 @@
       </div>
     </div>
 
-    <div class="message" v-if="store.getters.getShowMessage">
+    <va-alert v-if="store.getters.getShowMessage" color="success" class="mb-4">
       Ваш заказ на сумму {{ route.params.sum }}
       {{ route.params.currency }} успешно оформлен
-    </div>
+    </va-alert>
 
     <div class="books-wraper" v-if="books">
       <Book
@@ -39,6 +44,16 @@
       />
     </div>
 
+    <va-pagination
+      v-if="store.getters.getBooks"
+      :visible-pages="9"
+      v-model="page"
+      size="medium"
+      :pages="Math.ceil(store.getters.getBooks.totalItems / 12)"
+      boundary-numbers
+      class="mb-4"
+    />
+
     <OrderBookModal
       :showModal="handleShowModal"
       :book="currentBook"
@@ -48,7 +63,7 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import Book from '@/components/Book.vue';
 import OrderBookModal from '@/components/OrderBookModal.vue';
@@ -68,6 +83,7 @@ export default {
     const currentBook = ref(null);
     const store = useStore();
     const route = useRoute();
+    const page = ref(1);
     const searchText = computed({
       get() {
         return store.getters.getSearchText;
@@ -81,13 +97,21 @@ export default {
     });
 
     function handleShowModal() {
-      console.log(orderBookModal.value.bookModal);
+      // console.log(orderBookModal.value.bookModal);
       orderBookModal.value.bookModal.show();
     }
 
     function setCurrentBook(book) {
       currentBook.value = book;
     }
+
+    function handlePagination() {
+      store.dispatch('fetchBooks', { startIndex: page.value * 12 - 12 });
+    }
+
+    watch(page, (newPage) => {
+      handlePagination(newPage);
+    });
 
     return {
       searchText,
@@ -98,6 +122,8 @@ export default {
       orderBookModal,
       store,
       route,
+      page,
+      handlePagination,
     };
   },
 };
@@ -109,7 +135,6 @@ export default {
 .books-wraper {
   padding: 15px 0 30px;
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 20px;
 }
@@ -128,16 +153,14 @@ export default {
     align-items: center;
   }
 }
-.message {
-  background-color: rgb(178, 247, 178);
-  color: rgb(3, 148, 3);
-  padding: 24px;
-  margin: 24px 0;
-}
 form {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 600px;
+}
+.va-button-group {
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

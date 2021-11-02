@@ -7,6 +7,7 @@ export default createStore({
     books: null,
     orderedBooks: [],
     showMessage: false,
+    disabled: false,
   },
   mutations: {
     fetchBooks(state, payload) {
@@ -16,13 +17,37 @@ export default createStore({
       state.searchText = payload;
     },
     addOrderedBook(state, payload) {
-      state.orderedBooks = [...state.orderedBooks, payload];
+      if (
+        !state.orderedBooks.length ||
+        !state.orderedBooks.some((book) => book.id === payload.id)
+      ) {
+        payload.counter = 1;
+        state.orderedBooks = [...state.orderedBooks, payload];
+      } else {
+        state.orderedBooks.find((book) => book.id === payload.id).counter++;
+      }
+    },
+    increment(state, payload) {
+      state.orderedBooks[payload].counter++;
+    },
+    decrement(state, payload) {
+      if (state.orderedBooks[payload].counter > 1) {
+        state.orderedBooks[payload].counter--;
+      }
+    },
+    removeItem(state, payload) {
+      state.orderedBooks = state.orderedBooks.filter(
+        (book) => book.id !== state.orderedBooks[payload].id
+      );
     },
     switchShowMessage(state, payload) {
       state.showMessage = payload;
     },
     resetOrderedBooks(state) {
       state.orderedBooks = [];
+    },
+    switchDisabled(state, payload) {
+      state.disabled = payload;
     },
   },
   getters: {
@@ -37,11 +62,18 @@ export default createStore({
     },
     getTotalPrice(state) {
       return state.orderedBooks
-        .reduce((total, book) => total + book.saleInfo.retailPrice.amount, 0)
+        .reduce(
+          (total, book) =>
+            total + book.saleInfo.retailPrice.amount * book.counter,
+          0
+        )
         .toFixed(2);
     },
     getShowMessage(state) {
       return state.showMessage;
+    },
+    getDisabled(state) {
+      return state.disabled;
     },
   },
   actions: {
@@ -57,6 +89,7 @@ export default createStore({
               params: {
                 q: getters.getSearchText,
                 startIndex: payload.startIndex,
+                maxResults: 12,
               },
             }
           );
@@ -75,6 +108,17 @@ export default createStore({
     resetOrderedBooks({ commit }) {
       commit('resetOrderedBooks');
     },
+    increment({ commit }, payload) {
+      commit('increment', payload);
+    },
+    decrement({ commit }, payload) {
+      commit('decrement', payload);
+    },
+    removeItem({ commit }, payload) {
+      commit('removeItem', payload);
+    },
+    switchDisabled({ commit }, payload) {
+      commit('switchDisabled', payload);
+    },
   },
-  // modules: {},
 });

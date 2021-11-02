@@ -19,13 +19,22 @@
         <div class="book__svg" v-else>
           <va-icon name="book" color="#9BEC15" class="mr-4" :size="150" />
         </div>
-        <div class="info__description" v-if="book.volumeInfo.description">
+        <div class="info__description mb-4" v-if="book.volumeInfo.description">
           {{ book.volumeInfo.description }}
         </div>
       </div>
 
+      <hr />
+
       <div class="form-wraper">
-        <h3>Введите данные</h3>
+        <!-- <h3>Введите данные</h3> -->
+        <h3 v-if="!$store.getters.getOrderedBooks.length">Введите данные</h3>
+        <div v-else class="checking-form">
+          <h3>Проверьте данные</h3>
+          <va-button class="disabledBtn mt-2" flat @click="disabledChange"
+            >Изменить</va-button
+          >
+        </div>
         <form class="form" id="form" novalidate="true">
           <div class="form__item">
             <va-input
@@ -35,6 +44,7 @@
               v-model="name"
               label="Имя"
               placeholder="Введите имя"
+              :disabled="store.getters.getDisabled"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorName">
@@ -49,6 +59,7 @@
               v-model="email"
               label="Email"
               placeholder="Введите ваш email"
+              :disabled="store.getters.getDisabled"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorEmail">
@@ -63,6 +74,7 @@
               v-model="phoneNumber"
               label="Номер телефона"
               placeholder="+380*********"
+              :disabled="store.getters.getDisabled"
             />
 
             <span style="white-space: nowrap" v-if="errors.errorPhone">
@@ -74,9 +86,9 @@
     </slot>
 
     <template v-if="bookModal" #footer>
-      <va-button @click="bookModal.hide" flat class="mr-4"> Закрыть </va-button>
+      <va-button @click="disabledBtn()" flat class="mr-4"> Закрыть </va-button>
       <va-button
-        @click="handleSendForm"
+        @click="handleSendForm()"
         :disabled="!name || !email || !phoneNumber"
       >
         Отправить
@@ -122,8 +134,17 @@ export default {
 
     function handleSendForm() {
       checkForm();
+
       if (checkForm() === true) {
+        if (
+          store.getters.getOrderedBooks.find(
+            (book) => book.id === props.book.id
+          )
+        ) {
+          confirm('Эта книга уже есть в корзине. Все равно добавить?');
+        }
         store.dispatch('addOrderedBook', props.book);
+        store.dispatch('switchDisabled', true);
         bookModal.value.hide();
       } else {
         bookModal.value.show();
@@ -131,6 +152,7 @@ export default {
         checkForm();
         if (checkForm() === true) {
           store.dispatch('addOrderedBook', props.book);
+          store.dispatch('switchDisabled', true);
           bookModal.value.hide();
         }
       }
@@ -182,13 +204,43 @@ export default {
       errors.errorPhone = '';
     }
 
+    function disabledChange() {
+      store.dispatch('switchDisabled', false);
+    }
+    function disabledBtn() {
+      if (
+        !store.getters.getOrderedBooks.length &&
+        (!name.value || !email.value || !phoneNumber.value)
+      ) {
+        store.dispatch('switchDisabled', false);
+        bookModal.value.hide();
+      }
+      if (
+        !store.getters.getOrderedBooks.length &&
+        (name.value || email.value || phoneNumber.value)
+      ) {
+        store.dispatch('switchDisabled', false);
+        name.value = '';
+        email.value = '';
+        phoneNumber.value = '';
+        bookModal.value.hide();
+      }
+      if (store.getters.getOrderedBooks.length) {
+        store.dispatch('switchDisabled', true);
+        bookModal.value.hide();
+      }
+    }
+
     return {
+      store,
       handleSendForm,
       errors,
       name,
       email,
       phoneNumber,
       bookModal,
+      disabledBtn,
+      disabledChange,
     };
   },
 };
@@ -203,7 +255,6 @@ export default {
   &__item {
     display: flex;
     flex-direction: column;
-    padding-bottom: 15px;
     width: 60%;
   }
   &__input {
@@ -213,57 +264,17 @@ export default {
     color: rgb(238, 109, 109);
   }
 }
-
-.form-wraper {
+.form-wraper,
+.checking-form {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
-
-.modal-batton {
-  display: flex;
-  justify-content: space-between;
-  width: 60%;
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 5px;
-  &--primary {
-    background-color: rgb(133, 199, 221);
-    color: #fff;
-  }
-  &--secondary {
-    background-color: #dddd;
-    color: #000;
-  }
-}
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .va-modal__title {
   font-size: 1.25rem !important;
-}
-
-button {
-  background: none;
-  border: none;
-  outline: inherit;
-  cursor: pointer;
-}
-
-.modal {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    margin: 0;
-    font-size: 18px;
-  }
 }
 </style>
